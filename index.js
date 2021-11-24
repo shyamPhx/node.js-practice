@@ -2,7 +2,7 @@
 import express from "express"; // "type":"module";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
-import { getMovieByid, createMovie, getMovies, deleteMovieByid, updateMovieByName, getMovieByName } from "./helper.js";
+import { movieRouter } from "./routes/movie.js";
 
 dotenv.config();
 console.log(process.env);
@@ -120,8 +120,7 @@ export async function createConnection() {
 
 // createConnection();
 
- const client = await createConnection();
-
+const client = await createConnection();
 
 app.get("/", (request, response) => {
   response.send("hello world***😎😍");
@@ -146,67 +145,8 @@ app.get("/", (request, response) => {
 //   response.send(filteredMovies);
 // });
 
-
-
-// getting the data from mongo db
-// get movie by id:
-
-app.get("/movies/:id", async (request, response) => {
-  const { id } = request.params;
-  const movie = await getMovieByid(id);
-
-  response.send(movie ? movie : { message: "no matching movies" });
-});
-
-// create movies:
-
-app.post("/movies", async (request, response) => {
-  const data = request.body;
-  const result = await createMovie(data);
-
-  response.send(result);
-});
-
-// get  movie by rating:
-
-app.get("/movies", async (request, response) => {
-  console.log(request.query);
-  let filter = request.query;
-
-  if (filter.rating) {
-    filter.rating = parseInt(filter.rating);
-  }
-  console.log(filter);
-  const movies = await getMovies(filter);
-  // console.log(movies);
-  response.send(movies);
-});
-
-// delete movies:
-
-app.delete("/movies/:id", async (request, response) => {
-  const { id } = request.params;
-  // const movie = movies.find((mv) => mv.id === id);
-  //    movie?  response.send(movie) : response.send({message: "no matching movies"}) ;
-  const movie = await deleteMovieByid(id);
-
-  response.send(movie ? movie : { message: "no matching movies" });
-});
-
-
-// edit movie:
-
-app.put("/movies", async (request, response) => {
-  const { name } = request.query;
-  console.log(request.query, request.body);
-
-   await updateMovieByName(name, request);
-
-  const movie = await getMovieByName(name);
-  response.send(movie);
-});
+app.use("/movies", movieRouter);
 
 app.listen(PORT, () => console.log("The server is started in ", PORT));
 
-export {client};
-
+export { client };
