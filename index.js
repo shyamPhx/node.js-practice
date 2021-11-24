@@ -89,7 +89,12 @@ app.use(express.json());
 //   },
 // ];
 
-const PORT = 9000;
+
+
+
+
+const PORT = process.env.PORT || 9000;
+// in heroku it will run on available port...
 
 // collecting data from mongodb:
 
