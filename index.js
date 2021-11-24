@@ -3,7 +3,6 @@ import express from "express"; // "type":"module";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 console.log(process.env);
 
@@ -95,7 +94,7 @@ const PORT = 9000;
 
 // const MONGO_URL = "mongodb://localhost";
 
-const MONGO_URL= process.env.MONGO_URL;
+const MONGO_URL = process.env.MONGO_URL;
 
 // mongodb+srv://shyamsundar:<password>@cluster0.qxgkw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
@@ -124,6 +123,8 @@ app.get("/", (request, response) => {
   response.send("hello world***😎😍");
 });
 
+// get movie by language: (node.js method)
+
 app.get("/movies", (request, response) => {
   console.log(request.query);
   const { language, rating } = request.query;
@@ -142,6 +143,7 @@ app.get("/movies", (request, response) => {
 });
 
 // getting the data from mongo db
+// get movie by id:
 
 app.get("/movies/:id", async (request, response) => {
   const { id } = request.params;
@@ -172,6 +174,8 @@ app.post("/movies", async (request, response) => {
   response.send(result);
 });
 
+// get  movie by rating:
+
 app.get("/movies", async (request, response) => {
   console.log(request.query);
   let filter = request.query;
@@ -200,6 +204,35 @@ app.get("/movies", async (request, response) => {
     .toArray();
   console.log(movies);
   response.send(movies);
+});
+
+// delete movies:
+
+app.delete("/movies/:id", async (request, response) => {
+  const { id } = request.params;
+  // const movie = movies.find((mv) => mv.id === id);
+  //    movie?  response.send(movie) : response.send({message: "no matching movies"}) ;
+  const client = await createConnection();
+  const movie = await client
+    .db("b27rwd")
+    .collection("movies")
+    .deleteOne({ id: id });
+
+  response.send(movie ? movie : { message: "no matching movies" });
+});
+
+// edit movie:
+
+app.put("/movies", async (request, response) => {
+  const { name } = request.query;
+  console.log(request.query, request.body);
+
+  const client = await createConnection();
+  const result = await client
+    .db("b27rwd")
+    .collection("movies")
+    .updateOne({ name: name }, { $set: request.body });
+  response.send(result);
 });
 
 app.listen(PORT, () => console.log("The server is started in ", PORT));
