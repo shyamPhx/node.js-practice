@@ -3,6 +3,7 @@ import express from "express"; // "type":"module";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import { movieRouter } from "./routes/movie.js";
+import { userRouter } from "./routes/users.js";
 
 dotenv.config();
 console.log(process.env);
@@ -89,10 +90,6 @@ app.use(express.json());
 //   },
 // ];
 
-
-
-
-
 const PORT = process.env.PORT || 9000;
 // in heroku it will run on available port...
 
@@ -151,7 +148,9 @@ app.get("/", (request, response) => {
 // });
 
 app.use("/movies", movieRouter);
+app.use("/users", userRouter);
 
 app.listen(PORT, () => console.log("The server is started in ", PORT));
 
 export { client };
+
